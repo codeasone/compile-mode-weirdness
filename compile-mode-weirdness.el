@@ -20,3 +20,19 @@
   (with-current-buffer (get-buffer-create "*weird-regexp-matching-issue*")
     (compilation-start "./fixture.sh" 'weird-compilation-mode (lambda (m) (buffer-name)))
     ))
+
+;; Mitigation: http://emacs.stackexchange.com/a/31223/15111
+;; By: http://emacs.stackexchange.com/users/5253/politza
+;;
+;; (defun compilation-reparse-buffer (&rest _ignored)
+;;   (interactive)
+;;   (compilation--flush-parse (point-min) (point-max))
+;;   (compilation--ensure-parse (point-max)))
+
+;; (add-hook 'weird-compilation-mode-hook
+;;           (lambda nil
+;;             (add-hook 'compilation-finish-functions #'compilation-reparse-buffer nil t)))
+
+;; Debugging: check contents of "*Messages*" buffer
+;; (trace-function-background 'compilation--ensure-parse "*Messages*")
+;; (untrace-function 'compilation--ensure-parse)
